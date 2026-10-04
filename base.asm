@@ -7,3 +7,5 @@ section .bss
 
 section .text
 main:
+    push rbx
+    mov rbx, tape 
