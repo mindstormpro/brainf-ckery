@@ -33,6 +33,7 @@ for bfc in bf:
         lasm += "    ; PLACEHOLDER"
     elif bfc == "]":
         asm += "    ; PLACEHOLDER"
+asm += end
 
 with open("out.asm", "x") as out:
     out.write(asm)
