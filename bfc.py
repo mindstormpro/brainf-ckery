@@ -30,9 +30,20 @@ for bfc in bf:
     elif bfc == ".":
         asm += "    ; PLACEHOLDER"
     elif bfc == "[":
-        lasm += "    ; PLACEHOLDER"
+        bracketCounter += 1
+        bracketStack.append(bracketCounter)
+        asm += f"""
+loopStart{bracketCounter}:
+    cmp byte [rbx, 0]
+    jz loopEnd{bracketCounter}
+"""
     elif bfc == "]":
-        asm += "    ; PLACEHOLDER"
+        endVal: int = bracketStack.pop()
+        asm += f"""
+loopEnd{endVal}:
+    cmp byte [rbx], 0
+    jnz loopStart{endVal}
+"""
 asm += end
 
 with open("out.asm", "x") as out:
