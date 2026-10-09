@@ -60,32 +60,32 @@ with open(inputFile) as inBf:
 if verbose : print(f"reading {len(bf)} chars from {inputFile}")
 bfCounter: int = 0
 for bfc in bf:
-    if bfc == ">":
+    if bfc == ">": # the > instruction
         bfCounter += 1
         asm += "    inc ebx\n" # ptrUp
-    elif bfc == "<":
+    elif bfc == "<": # the < instruction
         bfCounter += 1
         asm += "    dec ebx\n" # ptrDown
-    elif bfc == "+":
+    elif bfc == "+": # the + instruction
         bfCounter += 1
         asm += "    inc byte [ebx]\n" # cellUp
-    elif bfc == "-":
+    elif bfc == "-": # the - instruction
         bfCounter += 1
         asm += "    dec byte [ebx]\n" # cellDown
-    elif bfc == ",":
+    elif bfc == ",": # the , instruction
         bfCounter += 1
         asm += """
     call _getchar
     mov byte [ebx], AL 
 """ # moves the output byte from getchar into the curr cell... why does AL hold the output if win32 pushes outputs to the stack instead?
-    elif bfc == ".":
+    elif bfc == ".": # the . instructon
         bfCounter += 1
         asm += """
     movzx eax, byte [ebx]
     push eax
     call _putchar
 """
-    elif bfc == "[":
+    elif bfc == "[": # for the [ instruction
         bfCounter += 1
         bracketCounter += 1
         bracketStack.append(bracketCounter)
@@ -94,7 +94,7 @@ loopStart{bracketCounter}:
     cmp byte [ebx], 0
     jz loopEnd{bracketCounter}
 """
-    elif bfc == "]":
+    elif bfc == "]": # for the ] instruction
         bfCounter += 1
         endVal: int = bracketStack.pop()
         asm += f"""
@@ -102,18 +102,26 @@ loopEnd{endVal}:
     cmp byte [ebx], 0
     jnz loopStart{endVal}
 """
-if verbose : print(f"read {bfCounter} out of {len(bf)} chars as valid BF code")
+
+if verbose : print(f"read {bfCounter} out of {len(bf)} chars as valid BF code") #logging how many BF chars were counted
+
 asm += end
+
+# directory stuff
 if verbose :  print("removing old build directory")
 shutil.rmtree("build/", ignore_errors=True)
 if verbose : print("creating new build directory")
 os.makedirs("build", exist_ok=True)
-with open("build/out.asm", "x") as out:
+
+with open("build/out.asm", "x") as out: # writing out the assembly
     out.write(asm)
-if verbose : print("compiling to assembly...")
+
+if verbose : print("compiling to an object file...") # the compiling to an object file for GCC to use
 subprocess.run("nasm -f win32 build/out.asm -o build/out.obj")
-if verbose : print("assembling to binary")
+
+if verbose : print("assembling to binary") # the assembling to a raw binary executable + linking and other dark magic
 subprocess.run(f"gcc build/out.obj -o {outputFile}")
-if runOnComplete:
+
+if runOnComplete: # runs the exe if the -r or --Run flags are passed
     if verbose : print("running the compiled EXE...")
     subprocess.run(f"./{outputFile}")
