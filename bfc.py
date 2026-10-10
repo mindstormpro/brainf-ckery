@@ -4,6 +4,12 @@ import os
 import getopt
 import sys
 
+# TODO: 
+# add removal of comments, incase they contain valid BF code so the compiler doesnt read that.
+#
+
+VERSION = 1
+
 args: list[str] = sys.argv[1:]
 options = "hi:o:rcv"
 long_options: list[str] = ["Help", "Input=", "Output=", "RunOnComp", "Clean", "Verbose"]
@@ -12,11 +18,12 @@ inputFile: str = "in.bf"
 outputFile: str = "out.exe"
 runOnComplete: bool = False
 verbose: bool = False
+
 try:
     arguments, values = getopt.getopt(args, options, long_options)
     for currentArg, currentVal in arguments:
         if currentArg in ("-h", "--Help"):
-            print("Here's where I would put a help message, but I'm too lazy, Ill do it later :b")
+            print(f"BrainF#ckery windows compiler version {VERSION}\n")
         elif currentArg in ("-i", "--Input"):
             inputFile = currentVal
         elif currentArg in ("-o", "--Output"):
@@ -58,6 +65,16 @@ bf: str
 with open(inputFile) as inBf:
     bf = inBf.read()
 if verbose : print(f"reading {len(bf)} chars from {inputFile}")
+while ';' in bf:
+    if not '\n' in bf.split(';')[1]:
+        bf = bf.split(';')[0]
+    else:
+        part1: str = bf.split(';')[0]
+        part2: str = bf.split(';')[1].split('\n')[1]
+        bf = part1 + part2
+print(bf)
+    
+
 bfCounter: int = 0
 for bfc in bf:
     if bfc == ">": # the > instruction
