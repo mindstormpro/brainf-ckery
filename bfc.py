@@ -18,7 +18,7 @@ inputFile: str = "in.bf"
 outputFile: str = "out.exe"
 runOnComplete: bool = False
 verbose: bool = False
-
+clean = False
 try:
     arguments, values = getopt.getopt(args, options, long_options)
     for currentArg, currentVal in arguments:
@@ -32,6 +32,8 @@ try:
             runOnComplete = True
         elif currentArg in ("-v", "--Verbose"):
             verbose = True
+        elif currentArg in ("-c", "--Clean"):
+            clean = True
 except getopt.error as err:
     print(str(err))
 
@@ -65,7 +67,7 @@ bf: str
 with open(inputFile) as inBf:
     bf = inBf.read()
 if verbose : print(f"reading {len(bf)} chars from {inputFile}")
-while ';' in bf:
+while ';' in bf: # this removes all comments
     if not '\n' in bf.split(';')[1]:
         bf = bf.split(';')[0]
     else:
@@ -138,7 +140,10 @@ subprocess.run("nasm -f win32 build/out.asm -o build/out.obj")
 
 if verbose : print("assembling to binary") # the assembling to a raw binary executable + linking and other dark magic
 subprocess.run(f"gcc build/out.obj -o {outputFile}")
-
+if clean:
+    os.remove("build/out.asm")
+    os.remove("build/out.obj")
+    os.rmdir("build/")
 if runOnComplete: # runs the exe if the -r or --Run flags are passed
     if verbose : print("running the compiled EXE...")
     subprocess.run(f"./{outputFile}")
