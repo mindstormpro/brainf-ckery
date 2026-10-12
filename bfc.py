@@ -3,6 +3,7 @@ import subprocess
 import os
 import getopt
 import sys
+from contextlib import suppress
 
 # TODO: 
 # add removal of comments, incase they contain valid BF code so the compiler doesnt read that.
@@ -74,7 +75,7 @@ while ';' in bf: # this removes all comments
         part1: str = bf.split(';')[0]
         part2: str = bf.split(';')[1].split('\n')[1]
         bf = part1 + part2
-print(bf)
+if verbose: print(bf)
     
 
 bfCounter: int = 0
@@ -127,23 +128,26 @@ if verbose : print(f"read {bfCounter} out of {len(bf)} chars as valid BF code") 
 asm += end
 
 # directory stuff
-if verbose :  print("removing old build directory")
-shutil.rmtree("build/", ignore_errors=True)
 if verbose : print("creating new build directory")
 os.makedirs("build", exist_ok=True)
-
+with suppress(FileNotFoundError):
+    os.remove("build/out.asm")
+with suppress(FileNotFoundError):
+    os.remove("build/out.obj")
+    
 with open("build/out.asm", "x") as out: # writing out the assembly
     out.write(asm)
 
 if verbose : print("compiling to an object file...") # the compiling to an object file for GCC to use
 subprocess.run("nasm -f win32 build/out.asm -o build/out.obj")
-
 if verbose : print("assembling to binary") # the assembling to a raw binary executable + linking and other dark magic
 subprocess.run(f"gcc build/out.obj -o {outputFile}")
+
 if clean:
     os.remove("build/out.asm")
     os.remove("build/out.obj")
     os.rmdir("build/")
+    
 if runOnComplete: # runs the exe if the -r or --Run flags are passed
     if verbose : print("running the compiled EXE...")
     subprocess.run(f"./{outputFile}")
