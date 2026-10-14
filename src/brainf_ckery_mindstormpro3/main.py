@@ -8,7 +8,7 @@ from contextlib import suppress
 # add removal of comments, incase they contain valid BF code so the compiler doesnt read that.
 #
 
-VERSION = "1.0.0"
+VERSION = "1.0.2"
 def run():
     args: list[str] = sys.argv[1:]
     options = "hi:o:rcv"
@@ -104,6 +104,7 @@ _main:
     movzx eax, byte [ebx]
     push eax
     call _putchar
+    pop eax
 """
         elif bfc == "[": # for the [ instruction
             bfCounter += 1

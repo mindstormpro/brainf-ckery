@@ -3,7 +3,7 @@ requires = ["hatchling >= 1.26"]
 build-backend = "hatchling.build"
 [project]
 name = "brainf-ckery_mindstormpro3"
-version = "1.0.0"
+version = "1.0.2"
 authors = [
   { name="Elio A.", email="elioanon20@Proton.me" },
 ]
@@ -22,4 +22,4 @@ license-files = ["LICEN[CS]E*"]
 Homepage = "https://github.com/pypa/sampleproject"
 Issues = "https://github.com/pypa/sampleproject/issues"
 [project.scripts]
-bf = "brainf-ckery_mindstormpro3.main:run"
+bfc = "brainf_ckery_mindstormpro3.main:run"
